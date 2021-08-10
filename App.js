@@ -9,6 +9,7 @@ import ProfileScreen from "./containers/ProfileScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
+import { StatusBar } from "expo-status-bar";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -44,14 +45,20 @@ export default function App() {
 
   return (
     <NavigationContainer>
+      <StatusBar style="dark" />
       {isLoading ? null : userToken === null ? ( // We haven't finished checking for the token yet
         // No token found, user isn't signed in
         <Stack.Navigator>
-          <Stack.Screen name="SignIn">
+          <Stack.Screen name="SignIn" options={{ headerShown: false }}>
             {() => <SignInScreen setToken={setToken} />}
           </Stack.Screen>
           <Stack.Screen name="SignUp">
-            {() => <SignUpScreen setToken={setToken} />}
+            {() => (
+              <SignUpScreen
+                setToken={setToken}
+                options={{ headerShown: false }}
+              />
+            )}
           </Stack.Screen>
         </Stack.Navigator>
       ) : (
