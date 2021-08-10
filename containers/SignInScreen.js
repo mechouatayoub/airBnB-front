@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/core";
 import {
+  Alert,
+  ActivityIndicator,
   Button,
   Image,
   SafeAreaView,
@@ -11,17 +13,76 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useState } from "react";
-// import { Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import axios from "axios";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [disabledButton, setDisabledButton] = useState(true);
+  const [passwordHidden, setPasswordHidden] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  async function authenticateUser() {
+    // console.log(email, ",", password);
+
+    setIsLoading(true);
+    try {
+      let response = await axios.post(
+        "https://express-airbnb-api.herokuapp.com/user/log_in",
+        { email: email, password: password }
+      );
+      // console.log(response.data);
+      // let a = await setTimeout(() => {
+      //   console.log("hihihih");
+      // }, 10000); // ne marche pas
+      if (response.data.token) {
+        // navigation.navigate("SignUp");
+        Alert.alert("Success", "You are connected", [{ text: "Ok" }]);
+      }
+    } catch (error) {
+      console.log("Axios error:", error.message);
+      Alert.alert(
+        "Unknown user",
+        "Wrong password or e-mail not found. Please register, if you aren't yet.",
+        [
+          { text: "Cancel" },
+          {
+            text: "Sign up",
+            onPress: () => {
+              navigation.navigate("SignUp");
+            },
+          },
+        ]
+      );
+    }
+
+    setIsLoading(false);
+  }
   return (
-    <KeyboardAwareScrollView>
-      <SafeAreaView style={[Style.mainContainer]}>
+    <SafeAreaView style={[Style.mainContainer]}>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{
+          flex: 1,
+          padding: "10%",
+        }}
+      >
+        {isLoading && (
+          <ActivityIndicator
+            style={{
+              position: "absolute",
+              top: "10%",
+              left: "10%",
+              height: "110%",
+              width: "110%",
+              opacity: 0.5,
+              backgroundColor: "white",
+            }}
+          />
+        )}
         {/* Header : icon + screen Name */}
         <View style={Style.header}>
           {/* Business logo */}
@@ -35,48 +96,105 @@ export default function SignInScreen({ setToken }) {
         </View>
         {/* Inputs 2 : mail and password */}
         <View style={Style.inputsContainer}>
-          <TextInput style={Style.textInput} placeholder="Email"></TextInput>
           <TextInput
-            style={Style.textInput}
-            placeholder="Password"
-            secure={true}
+            style={Style.emailInput}
+            placeholder="Email"
+            onChangeText={(input) => {
+              setEmail(input);
+              if (input !== "" && password !== "") {
+                setDisabledButton(false);
+              } else {
+                setDisabledButton(true);
+              }
+              console.log(input);
+            }}
           ></TextInput>
-          {/* <View style={Style.passwordContainer}> */}
 
-          {/* <Feather
-            name="eye"
-            size={24}
-            color="black"
-            style={Style.revealPasswordIcon}
-          /> */}
-          {/* <Feather name="eye-off" size={24} color="black" /> */}
-          {/* </View> */}
+          <View style={Style.passwordContainer}>
+            <TextInput
+              style={Style.passwordInput}
+              placeholder="Password"
+              secureTextEntry={passwordHidden ? true : false}
+              onChangeText={(input) => {
+                setPassword(input);
+
+                if (input !== "" && email !== "") {
+                  setDisabledButton(false);
+                } else {
+                  setDisabledButton(true);
+                }
+                console.log(input, email);
+              }}
+            ></TextInput>
+            {passwordHidden ? (
+              <Feather
+                name="eye"
+                size={24}
+                color="black"
+                style={Style.revealPasswordIcon}
+                onPress={() => {
+                  setPasswordHidden(false);
+                }}
+              />
+            ) : (
+              <Feather
+                name="eye-off"
+                size={24}
+                color="black"
+                style={Style.revealPasswordIcon}
+                onPress={() => {
+                  setPasswordHidden(true);
+                }}
+              />
+            )}
+          </View>
         </View>
         {/* Button and a redirect */}
         <View style={Style.footerContainer}>
-          <Text style={Style.alertText}>Please fill all fields</Text>
-          <TouchableOpacity style={Style.signInButton}>
+          <Text
+            style={
+              email === "" || password === ""
+                ? Style.alertTextVisible
+                : Style.alertTextHidden
+            }
+          >
+            Please fill all fields
+          </Text>
+          <TouchableOpacity
+            style={Style.signInButton}
+            onPress={authenticateUser}
+            disabled={disabledButton}
+          >
             <Text style={Style.signInText}>Sign in</Text>
           </TouchableOpacity>
-          <Text style={Style.registerText}>No account? Register</Text>
+          <View style={Style.registerRedirection}>
+            <Text style={Style.registerText}>No account? </Text>
+            <TouchableOpacity>
+              <Text
+                style={Style.registerRedirectionText}
+                onPress={() => {
+                  navigation.navigate("SignUp");
+                }}
+              >
+                Sign up
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </SafeAreaView>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </SafeAreaView>
   );
 }
 
 const Style = StyleSheet.create({
   mainContainer: {
-    margin: "4%",
-    // backgroundColor: "blue", // pourquoi ca descend jusqu'en bas ??
+    padding: 10,
     flex: 1,
-    // alignItems: "stretch",
   },
   header: {
-    flex: 1.5,
+    flex: 0.5,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: "10%",
   },
   logo: {
     height: "60%",
@@ -89,30 +207,33 @@ const Style = StyleSheet.create({
     color: "#717171",
   },
   inputsContainer: {
-    flex: 0.6,
+    flex: 1,
     alignItems: "stretch",
-    justifyContent: "space-around",
-  },
-  footerContainer: {
-    flex: 1.5,
     justifyContent: "center",
-    alignItems: "center",
+    marginVertical: "10%",
   },
-  textInput: {
-    height: "30%",
-    // backgroundColor: "blue",
+
+  emailInput: {
+    height: 40,
     borderBottomColor: "#FFBAC0",
     borderBottomWidth: 2,
-    // flex: 1,
   },
-  alertText: {
+  footerContainer: {
+    flex: 0.5,
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  alertTextVisible: {
     color: "#EB5A62",
+  },
+  alertTextHidden: {
+    opacity: 0,
   },
   signInButton: {
     borderColor: "#EB5A62",
     borderWidth: 2,
     borderRadius: 100,
-    height: "20%",
+    height: "30%",
     width: "50%",
     alignItems: "center",
     justifyContent: "center",
@@ -126,11 +247,26 @@ const Style = StyleSheet.create({
   registerText: {
     color: "#717171",
   },
-  // passwordContainer: {
-  //   flex: 1,
-  //   // alignItems: "center",
-  //   // backgroundColor: "blue",
-  //   // flexDirection: "row",
-  // },
-  revealPasswordIcon: { color: "grey" },
+  passwordContainer: {
+    height: "30%",
+    alignItems: "center",
+    flexDirection: "row",
+    position: "relative",
+  },
+  passwordInput: {
+    height: 40,
+    borderBottomColor: "#FFBAC0",
+    borderBottomWidth: 2,
+    flex: 1,
+  },
+  revealPasswordIcon: { color: "grey", position: "absolute", right: 0 },
+  registerRedirection: {
+    flexDirection: "row",
+  },
+  registerRedirectionText: {
+    color: "#EB5A62",
+    textDecorationColor: "#EB5A62",
+    textDecorationStyle: "solid",
+    textDecorationLine: "underline",
+  },
 });
