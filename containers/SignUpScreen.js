@@ -65,13 +65,9 @@ export default function SignInScreen({ setToken }) {
           password: password,
         }
       );
-      // console.log(response.data);
-      // let a = await setTimeout(() => {
-      //   console.log("hihihih");
-      // }, 10000); // ne marche pas
       if (response.data.token) {
-        // navigation.navigate("SignUp");
         Alert.alert("Success", "You are registered", [{ text: "Ok" }]);
+        setToken(response.data.token);
       }
     } catch (error) {
       console.log("Axios error:", error.message);

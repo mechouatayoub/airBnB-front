@@ -10,9 +10,22 @@ import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
 import { StatusBar } from "expo-status-bar";
+import OfferScreen from "./containers/OfferScreen";
+import { Feather } from "@expo/vector-icons";
+
+import { Image, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+function businessIcon() {
+  return (
+    <Image
+      style={{ height: 35, width: 35 }} // TODO : rendre l'image adéquate avec la hauteur de la barre
+      source={require("./assets/airBnBLogo.png")}
+    />
+  );
+}
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -86,18 +99,37 @@ export default function App() {
                       <Stack.Screen
                         name="Home"
                         options={{
-                          title: "My App",
-                          headerStyle: { backgroundColor: "red" },
-                          headerTitleStyle: { color: "white" },
+                          headerTitle: businessIcon(), // pourquoi affiche une icône dans l'écran suivant
                         }}
                       >
                         {() => <HomeScreen />}
                       </Stack.Screen>
 
                       <Stack.Screen
+                        name="Offer"
+                        options={{
+                          title: "Offer details",
+                          headerTitle: businessIcon(),
+                          headerBackTitleVisible: false,
+                          headerBackImage: () => (
+                            <View style={{ marginLeft: 5 }}>
+                              <Feather
+                                name="arrow-left"
+                                size={30}
+                                color="black"
+                              />
+                            </View>
+                          ),
+                        }}
+                      >
+                        {(props) => <OfferScreen {...props} />}
+                      </Stack.Screen>
+
+                      <Stack.Screen
                         name="Profile"
                         options={{
                           title: "User Profile",
+                          headerTitle: businessIcon(),
                         }}
                       >
                         {() => <ProfileScreen />}

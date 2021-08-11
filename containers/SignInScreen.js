@@ -16,6 +16,7 @@ import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -35,13 +36,11 @@ export default function SignInScreen({ setToken }) {
         "https://express-airbnb-api.herokuapp.com/user/log_in",
         { email: email, password: password }
       );
-      // console.log(response.data);
-      // let a = await setTimeout(() => {
-      //   console.log("hihihih");
-      // }, 10000); // ne marche pas
+
       if (response.data.token) {
         // navigation.navigate("SignUp");
-        Alert.alert("Success", "You are connected", [{ text: "Ok" }]);
+        // Alert.alert("Success", "You are connected", [{ text: "Ok" }]);
+        setToken(response.data.token);
       }
     } catch (error) {
       console.log("Axios error:", error.message);
