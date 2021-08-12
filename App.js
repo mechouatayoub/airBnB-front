@@ -12,7 +12,7 @@ import SettingsScreen from "./containers/SettingsScreen";
 import { StatusBar } from "expo-status-bar";
 import OfferScreen from "./containers/OfferScreen";
 import { Feather } from "@expo/vector-icons";
-
+import AroundMeScreen from "./containers/AroundMe.js";
 import { Image, View } from "react-native";
 
 const Tab = createBottomTabNavigator();
@@ -99,7 +99,8 @@ export default function App() {
                       <Stack.Screen
                         name="Home"
                         options={{
-                          headerTitle: businessIcon(), // pourquoi affiche une icône dans l'écran suivant
+                          headerTitle: <View>{businessIcon()}</View>, // pourquoi affiche une icône dans l'écran suivant
+                          headerTitleAlign: "center",
                         }}
                       >
                         {() => <HomeScreen />}
@@ -109,7 +110,8 @@ export default function App() {
                         name="Offer"
                         options={{
                           title: "Offer details",
-                          headerTitle: businessIcon(),
+                          headerTitle: <View>{businessIcon()}</View>, // pourquoi affiche une icône dans l'écran suivant
+                          headerTitleAlign: "center",
                           headerBackTitleVisible: false,
                           headerBackImage: () => (
                             <View style={{ marginLeft: 5 }}>
@@ -133,6 +135,29 @@ export default function App() {
                         }}
                       >
                         {() => <ProfileScreen />}
+                      </Stack.Screen>
+                    </Stack.Navigator>
+                  )}
+                </Tab.Screen>
+                <Tab.Screen
+                  name="Around me"
+                  options={{
+                    tabBarLabel: "Around me",
+                    tabBarIcon: ({ color, size }) => (
+                      <Ionicons name={"ios-home"} size={size} color={color} />
+                    ),
+                  }}
+                >
+                  {() => (
+                    <Stack.Navigator>
+                      <Stack.Screen
+                        name="Around me"
+                        options={{
+                          headerTitle: <View>{businessIcon()}</View>, // pourquoi affiche une icône dans l'écran suivant
+                          headerTitleAlign: "center",
+                        }}
+                      >
+                        {() => <AroundMeScreen />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}

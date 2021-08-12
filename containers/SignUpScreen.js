@@ -86,7 +86,9 @@ export default function SignInScreen({ setToken }) {
       );
     }
 
-    setIsLoading(false);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   }
   return (
     <SafeAreaView style={[Style.mainContainer]}>

@@ -5,7 +5,9 @@ import React from "react";
 import { SwiperFlatList } from "react-native-swiper-flatlist";
 
 function PricedImage({ height, price, imagesLink, data }) {
+  // console.log(imagesLink);
   let navigation = useNavigation();
+  let [width, setWidth] = React.useState(0);
   return (
     <TouchableOpacity
       style={{ height: height }}
@@ -13,12 +15,26 @@ function PricedImage({ height, price, imagesLink, data }) {
         navigation.navigate("Offer", { userData: data }); // TOD : router vers la page room
       }}
     >
-      <View style={[Style.mainContainer]}>
-        <Image
-          source={{ uri: imagesLink[0].url }}
-          style={[Style.image]}
-        ></Image>
-
+      <View
+        style={[Style.mainContainer]}
+        onLayout={(event) => {
+          // console.log(event.nativeEvent.layout.width);
+          setWidth(event.nativeEvent.layout.width);
+        }}
+      >
+        <SwiperFlatList
+          autoplay
+          autoplayDelay={2}
+          autoplayLoop
+          index={2}
+          showPagination
+          data={imagesLink}
+          renderItem={({ item }) => (
+            <View style={[Style.child, { width: width }]}>
+              <Image source={{ uri: item.url }} style={[Style.image]}></Image>
+            </View>
+          )}
+        />
         <View style={Style.priceContainer}>
           <Text style={Style.price}>{price} €</Text>
         </View>
@@ -32,6 +48,10 @@ const Style = StyleSheet.create({
     // backgroundColor: "blue",
     marginBottom: "2%",
     position: "relative",
+    flex: 1,
+  },
+  child: {
+    height: "100%",
   },
   image: {
     // backgroundColor: "pink",

@@ -3,6 +3,7 @@ import { useNavigation } from "@react-navigation/core";
 import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 import axios from "axios";
 import OfferCard from "../components/OfferCard/OfferCard";
+import LottieView from "lottie-react-native";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -21,7 +22,10 @@ export default function HomeScreen() {
         //s'il y'a une erreur dans le retour de la requête
         console.log("my error:", error.message);
       }
-      setIsLoadingData(false);
+      setTimeout(() => {
+        setIsLoadingData(false);
+      }, 3000);
+      // setIsLoadingData(false);
     }
     loadData();
   }, []);
@@ -29,7 +33,12 @@ export default function HomeScreen() {
   return (
     <View style={Style.viewContainer}>
       {isLoadingData ? (
-        <Text> Loading data</Text>
+        <LottieView
+          source={require("../assets/113-muzli-beacon.json")}
+          // style={{ backgroundColor: "blue" }}
+          loop
+          autoPlay
+        />
       ) : (
         <FlatList
           data={offers}
@@ -47,11 +56,14 @@ function render({ item }) {
 }
 const Style = StyleSheet.create({
   viewContainer: {
-    // backgroundColor: "white",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1,
-    paddingHorizontal: "3%",
+    // paddingHorizontal: "3%",
   },
   flatListStyle: {
     // backgroundColor: "pink",
+    paddingHorizontal: "3%",
   },
 });
