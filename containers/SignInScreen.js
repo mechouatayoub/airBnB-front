@@ -16,6 +16,7 @@ import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignInScreen({ setToken }) {
   const navigation = useNavigation();
@@ -40,7 +41,9 @@ export default function SignInScreen({ setToken }) {
       if (response.data.token) {
         // navigation.navigate("SignUp");
         // Alert.alert("Success", "You are connected", [{ text: "Ok" }]);
+        console.log(response.data);
         setToken(response.data.token);
+        AsyncStorage.setItem("userId", response.data.id);
         console.log("during", response.data.token);
       }
       console.log("after", response.data);

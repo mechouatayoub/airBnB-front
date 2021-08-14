@@ -45,11 +45,11 @@ function AroundMeScreen() {
       } catch (error) {
         console.log(error);
       }
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
     }
     getCurrentLocation();
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
   }, []);
   return (
     <View style={Style.mainContainer}>
@@ -101,3 +101,6 @@ const Style = StyleSheet.create({
 });
 
 export default AroundMeScreen;
+
+// Le comportement dynamique avec resize des simulateurs
+// Type de device / Iphone / andoird / quel modèle ?
